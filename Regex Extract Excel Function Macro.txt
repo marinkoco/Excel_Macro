@@ -1,0 +1,37 @@
+'Name of the excel function: Extract_Event
+'Example:
+'CELL A1 content: <Location: Atlanta , Name: John Albert, Title: Corporate Manager>
+'Formula: =(Extract_Event(A1,"Name:.*\,"))
+'Output: <Name: John Albert,>
+
+
+Function Extract_Event(text_1 As String, sequence As String, Optional instance_n As Integer = 0, Optional match_n As Boolean = True)
+    Dim text_1_matches() As String
+    Dim matches_index As Integer
+    On Error GoTo ErrHandl
+    Extract_Event = ""
+    Set regex = CreateObject("VBScript.RegExp")
+    regex.Pattern = sequence
+    regex.Global = True
+    regex.MultiLine = True
+    If True = match_n Then
+    regex.ignorecase = False
+    Else
+        regex.ignorecase = True
+    End If
+    Set matches = regex.Execute(text_1)
+    If 0 < matches.Count Then
+        If (0 = instance_n) Then
+            ReDim text_1_matches(matches.Count - 1, 0)
+            For matches_index = 0 To matches.Count - 1
+                text_1_matches(matches_index, 0) = matches.Item(matches_index)
+            Next matches_index
+            Extract_Event = text_1_matches
+        Else
+            Extract_Event = matches.Item(instance_n - 1)
+        End If
+    End If
+    Exit Function
+ErrHandl:
+    Extract_Event = CVErr(xlErrValue)
+End Function
